@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  web-and-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 25
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - run: npm install
+      - run: python3 -m pip install -e "services/worker[dev]"
+      - run: npm run test:web
+      - run: npm run test:worker
+
+  ios-package:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: swift test --package-path apps/ios

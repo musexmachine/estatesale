@@ -1,0 +1,15 @@
+{
+  "name": "estatesale",
+  "private": true,
+  "workspaces": [
+    "apps/admin-web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/admin-web",
+    "test": "npm run test --workspace apps/admin-web && ./.venv/bin/python -m pytest services/worker/tests && swift test --package-path apps/ios",
+    "test:web": "npm run test --workspace apps/admin-web",
+    "test:worker": "./.venv/bin/python -m pytest services/worker/tests",
+    "test:ios": "swift test --package-path apps/ios",
+    "lint": "npm run lint --workspace apps/admin-web && ./.venv/bin/python -m ruff check services/worker/src services/worker/tests"
+  }
+}
