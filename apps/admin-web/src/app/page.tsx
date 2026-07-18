@@ -8,7 +8,7 @@ export default async function HomePage() {
   const repo = getEstateSaleRepository();
   const data = await repo.getDashboardData();
   const publishableCount = data.reviewQueue.filter(
-    (item) => item.state === "approved" && item.riskFlags.length === 0,
+    (item) => item.state === "approved" && item.riskFlags.length === 0 && item.confidence >= 0.75,
   ).length;
 
   return (
