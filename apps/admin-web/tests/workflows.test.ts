@@ -1,6 +1,7 @@
 import {
   closeSiblingListings,
   dispatchCourierDelivery,
+  isReadyToPublish,
   publishListing,
   purchaseShippingLabel,
   schedulePickup,
@@ -42,6 +43,27 @@ describe("admin web workflows", () => {
     expect(() =>
       publishListing({ ...approvedItem, riskFlags: ["untested"] }, publishableDraft),
     ).toThrow("Risk-flagged items require manual clearance before publish.");
+  });
+
+  it("counts only approved, unflagged, high-confidence items as ready to publish", () => {
+    const queue = [
+      approvedItem,
+      { ...approvedItem, id: "item-low-confidence", confidence: 0.74 },
+      { ...approvedItem, id: "item-flagged", riskFlags: ["untested"] },
+      { ...approvedItem, id: "item-needs-review", state: "needs_review" as const },
+      { ...approvedItem, id: "item-threshold", confidence: 0.75 },
+    ];
+
+    expect(queue.filter(isReadyToPublish).map((item) => item.id)).toEqual([
+      "item-1",
+      "item-threshold",
+    ]);
+  });
+
+  it("blocks publish for approved items below the confidence gate", () => {
+    expect(() =>
+      publishListing({ ...approvedItem, confidence: 0.74 }, publishableDraft),
+    ).toThrow("Low-confidence items must stay in review.");
   });
 
   it("requires package dimensions before buying a shipping label", () => {

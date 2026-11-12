@@ -45,11 +45,21 @@ export function groupItems(items: CandidateItem[], groupId: string): CandidateIt
   }));
 }
 
+export const PUBLISH_CONFIDENCE_THRESHOLD = 0.75;
+
+export function isReadyToPublish(item: CandidateItem): boolean {
+  return (
+    item.state === "approved" &&
+    item.confidence >= PUBLISH_CONFIDENCE_THRESHOLD &&
+    item.riskFlags.length === 0
+  );
+}
+
 export function publishListing(item: CandidateItem, draft: ListingDraft): ListingDraft {
   if (item.state !== "approved") {
     throw new Error("Only approved items can be published.");
   }
-  if (item.confidence < 0.75) {
+  if (item.confidence < PUBLISH_CONFIDENCE_THRESHOLD) {
     throw new Error("Low-confidence items must stay in review.");
   }
   if (item.riskFlags.length > 0) {

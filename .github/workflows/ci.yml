@@ -19,7 +19,8 @@ jobs:
         with:
           python-version: "3.14"
       - run: npm install
-      - run: python3 -m pip install -e "services/worker[dev]"
+      - run: python3 -m venv .venv
+      - run: .venv/bin/pip install -e "services/worker[dev]"
       - run: npm run test:web
       - run: npm run test:worker
 

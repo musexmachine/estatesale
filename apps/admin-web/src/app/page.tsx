@@ -3,13 +3,12 @@ import { MetricCard } from "@/components/metric-card";
 import { OrdersPanel } from "@/components/orders-panel";
 import { ReviewQueue } from "@/components/review-queue";
 import { getEstateSaleRepository } from "@/lib/server/repository";
+import { isReadyToPublish } from "@/lib/workflows";
 
 export default async function HomePage() {
   const repo = getEstateSaleRepository();
   const data = await repo.getDashboardData();
-  const publishableCount = data.reviewQueue.filter(
-    (item) => item.state === "approved" && item.riskFlags.length === 0,
-  ).length;
+  const publishableCount = data.reviewQueue.filter(isReadyToPublish).length;
 
   return (
     <DashboardShell eyebrow="Build 1 Admin" title="EstateSale Operations">
